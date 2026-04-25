@@ -6,6 +6,55 @@
 
 ---
 
+## How to Run & Test the App
+
+### Start the dev server
+```powershell
+cd D:\Projects\Personal\BrainTraining\frontend
+npm run dev
+```
+Open **http://localhost:3000** in your browser.
+
+### Check for TypeScript errors
+```powershell
+cd D:\Projects\Personal\BrainTraining\frontend
+npm run build
+```
+Must always return 0 errors before any work is considered done.
+
+### What you should be able to see/do — by Epic
+
+| Epic | What becomes testable |
+|------|----------------------|
+| 1 & 2 | App runs. Default Next.js page at localhost:3000. Nothing game-related visible yet. |
+| 3 (UI Foundation) | Nav bar visible. AppShell wraps pages. Layout looks correct. |
+| 4 (Game Setup) | Dashboard shows 8 category cards. Clicking one goes to setup. Story count picker works. Clicking Start navigates to /game/play. |
+| 5 (Reading & Questions) | Full game playable end-to-end with mock data. MemoryPrompt appears. Paragraphs advance. Questions interrupt. Feedback shows. Results screen loads. Check browser console for `TODO save to db:` logs. |
+| 6 (Story Library) | /stories shows all story cards. Clicking one opens full reader. |
+| 7 (History & Settings) | /history and /settings pages load. |
+| 8 (AI Generation) | generateStories() and generateQuestions() return mock data. Console shows `[MOCK]` logs. Real content after OpenAI key is added. |
+| 9 (Database) | `TODO save to db:` console logs replaced by real Postgres writes. |
+
+### Checking the console logs (key testing tool before DB)
+Open browser DevTools → Console tab while playing a session.
+You will see lines like:
+```
+[MOCK] generateStories called — category: sci-fi ...
+TODO save to db: { type: 'paragraph_timing', paragraphIndex: 0, timeSpentMs: 4231 }
+TODO save to db: { type: 'question_response', isCorrect: true, delay: 1, ... }
+TODO save to db: { type: 'session_complete', metrics: { overallAccuracy: 0.75, avgWpm: 210 } }
+```
+These confirm the game logic is working correctly even before the database exists.
+
+### AI note — always provide manual test instructions
+After every epic or significant story, Claude must state:
+- How to start the app
+- What the user should navigate to
+- What they should see or be able to do
+- What to check in the browser console if relevant
+
+---
+
 ## What This Project Is
 
 A reading-based working memory training game. Users read short AI-generated stories and answer questions about earlier stories while reading later ones. The cognitive load comes from new story content actively interfering with memory of previous stories (delayed recall under proactive interference).
@@ -20,6 +69,7 @@ A reading-based working memory training game. Users read short AI-generated stor
 |------|-------|--------|
 | 1 | Project Scaffold | ✅ Complete |
 | 2 | Types, Registry & Game Engine | ✅ Complete |
+| 8 | AI Story Generation | 🟡 Mock layer done (hardcoded) — OpenAI call pending |
 | 3 | UI Foundation | 🔲 Not started |
 | 4 | Game Setup Flow | 🔲 Not started |
 | 5 | Reading & Question UI | 🔲 Not started |
@@ -132,8 +182,8 @@ BrainTraining/                          ← repo root
 │   │   │
 │   │   ├── ai/                         ← OpenAI GPT-4o integration (server-side, Cron only)
 │   │   │   ├── README.md               ← Cost estimate, environment variables, prompt strategy
-│   │   │   ├── generateStories.ts      ← generateStories(category, date, count) → Story[] [TO BUILD - Epic 8]
-│   │   │   └── generateQuestions.ts    ← generateQuestions(story) → Question[] [TO BUILD - Epic 8]
+│   │   │   ├── generateStories.ts      ← 🚧 MOCK generateStories(category, date, count) → Story[] — hardcoded, TODO block marks OpenAI swap point
+│   │   │   └── generateQuestions.ts    ← 🚧 MOCK generateQuestions(story) → Question[] — hardcoded, TODO block marks OpenAI swap point
 │   │   │
 │   │   └── api/                        ← HTTP client functions (stubs until Epic 9)
 │   │       ├── client.ts               ← Base fetch wrapper: base URL, error handling [TO BUILD - Epic 9]
