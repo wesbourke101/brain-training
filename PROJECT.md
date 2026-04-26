@@ -70,7 +70,7 @@ A reading-based working memory training game. Users read short AI-generated stor
 | 1 | Project Scaffold | ✅ Complete |
 | 2 | Types, Registry & Game Engine | ✅ Complete |
 | 8 | AI Story Generation | 🟡 Mock layer done (hardcoded) — OpenAI call pending |
-| 3 | UI Foundation | 🔲 Not started |
+| 3 | UI Foundation | ✅ Complete |
 | 4 | Game Setup Flow | 🔲 Not started |
 | 5 | Reading & Question UI | 🔲 Not started |
 | 6 | Story Library | 🔲 Not started |
@@ -132,14 +132,19 @@ BrainTraining/                          ← repo root
 │   │   ├── README.md                   ← Tier system, import conventions, naming rules
 │   │   │
 │   │   ├── ui/                         ← Tier 1: shadcn/ui primitives (stateless, no business logic)
-│   │   │   └── README.md               ← How to add shadcn components, list of planned primitives
-│   │   │                               ← [All shadcn components TO ADD - Epic 3]
+│   │   │   ├── README.md               ← How to add shadcn components, list of planned primitives
+│   │   │   ├── button.tsx              ← ✅ shadcn Button
+│   │   │   ├── card.tsx                ← ✅ shadcn Card / CardHeader / CardContent / CardFooter
+│   │   │   ├── badge.tsx               ← ✅ shadcn Badge
+│   │   │   ├── progress.tsx            ← ✅ shadcn Progress bar
+│   │   │   ├── slider.tsx              ← ✅ shadcn Slider
+│   │   │   └── input.tsx               ← ✅ shadcn Input
 │   │   │
 │   │   ├── layout/                     ← Tier 2: page shell wrappers
 │   │   │   ├── README.md               ← AppShell vs ReadingShell usage guide
-│   │   │   ├── AppShell.tsx            ← Nav + content wrapper for all non-game pages [TO BUILD - Epic 3]
-│   │   │   ├── ReadingShell.tsx        ← Full-screen distraction-free wrapper for /game/play [TO BUILD - Epic 3]
-│   │   │   └── PageHeader.tsx          ← Reusable page title + subtitle pattern [TO BUILD - Epic 3]
+│   │   │   ├── AppShell.tsx            ← ✅ Sticky nav (logo, 4 links, active state) + centred content area
+│   │   │   ├── ReadingShell.tsx        ← ✅ Full-screen dark wrapper for /game/play — no nav, quit button top-right
+│   │   │   └── PageHeader.tsx          ← ✅ Page title + optional subtitle + optional action slot
 │   │   │
 │   │   ├── game/                       ← Tier 3: game-specific components
 │   │   │   ├── README.md               ← Component roles, data flow diagram, key rules

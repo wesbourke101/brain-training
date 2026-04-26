@@ -5,7 +5,10 @@
       "Bash(npm install *)",
       "Bash(mkdir -p app/game/setup app/game/play app/game/results app/stories app/history app/settings components/ui components/layout components/game components/stories components/dashboard lib/ai lib/game lib/mock lib/api hooks types)",
       "Bash(mkdir -p \"D:/Projects/Personal/BrainTraining/docs\")",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npx shadcn@latest init --defaults)",
+      "Bash(npx shadcn@latest add card badge progress slider input --overwrite)",
+      "Bash(npx tsc *)"
     ]
   }
 }
