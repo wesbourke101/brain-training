@@ -38,7 +38,7 @@ export function ReadingShell({ children, onQuit, className }: ReadingShellProps)
         {/* Quit button */}
         <button
           onClick={onQuit}
-          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
           aria-label="Quit session"
         >
           <X className="h-3.5 w-3.5" />

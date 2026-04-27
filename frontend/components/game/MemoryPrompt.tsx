@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import type { Question } from '@/types/question'
 
@@ -19,9 +20,16 @@ export function MemoryPrompt({ question, storyTitle, onDismiss }: MemoryPromptPr
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-sm p-6 text-foreground">
       <div className="flex flex-col items-center gap-6 max-w-md w-full text-center">
 
-        {/* Icon */}
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-3xl">
-          🧠
+        {/* Brain image */}
+        <div className="flex h-24 w-24 items-center justify-center">
+          <Image
+            src="/brain.png"
+            alt="Brain"
+            width={96}
+            height={96}
+            priority
+            style={{ objectFit: 'contain' }}
+          />
         </div>
 
         {/* Heading */}
