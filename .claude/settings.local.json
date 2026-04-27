@@ -8,7 +8,8 @@
       "Bash(npm run *)",
       "Bash(npx shadcn@latest init --defaults)",
       "Bash(npx shadcn@latest add card badge progress slider input --overwrite)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(Remove-Item \"D:\\\\Projects\\\\Personal\\\\BrainTraining\\\\frontend\\\\components\\\\game\\\\CategoryCardTestBed.tsx\")"
     ]
   }
 }
