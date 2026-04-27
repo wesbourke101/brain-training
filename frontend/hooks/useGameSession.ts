@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Story, CategorySlug } from '@/types/story'
 import type { Question, ScheduledQuestion } from '@/types/question'
 import type { GameSession, SessionStory, QuestionResponse } from '@/types/session'
@@ -87,6 +87,12 @@ export function useGameSession(
   const [lastResponse, setLastResponse] = useState<QuestionResponse | null>(null)
   const [answeredIds] = useState(() => new Set<string>())
   const [sessionMetrics, setSessionMetrics] = useState<SessionMetrics | null>(null)
+  /**
+   * Where to go after the user dismisses question feedback.
+   * null  = question was at the end of the story → advance to next story.
+   * number = paragraph index to resume reading at.
+   */
+  const [pendingParagraphIndex, setPendingParagraphIndex] = useState<number | null>(null)
 
   // Accumulated per-story data
   const sessionStoriesRef = useRef<SessionStory[]>([])
@@ -114,17 +120,14 @@ export function useGameSession(
   /** Begin reading paragraph 0 of the given story. */
   const beginReading = useCallback(
     (storyOrder: number) => {
+      void storyOrder // storyOrder kept for clarity / future use
       setCurrentParagraphIndex(0)
       timer.startParagraph(0)
       setPhase('reading')
-      // Check for mid-story question at paragraph 0
-      const q = getNext(storyOrder, 0, answeredIds)
-      if (q) {
-        setActiveQuestion(q)
-        setPhase('question')
-      }
+      // Do NOT check for a question here — questions fire after the user has
+      // read a paragraph and taps Next, not before they've seen any text.
     },
-    [timer, getNext, answeredIds]
+    [timer]
   )
 
   /** Move to a new story (or complete the session if no more stories). */
@@ -164,12 +167,16 @@ export function useGameSession(
   )
 
   // ── Initialise on mount ──────────────────────────────────────────────────
-  // (Caller should trigger this by calling advanceToStory(1) after mounting,
-  //  or we auto-start in the first render. Here we use a lazy init pattern.)
-  useState(() => {
-    // Kick off story 1 after first render
-    setTimeout(() => advanceToStory(1), 0)
-  })
+  // useRef guard prevents double-invocation in React 18 Strict Mode.
+  const initializedRef = useRef(false)
+  useEffect(() => {
+    if (initializedRef.current) return
+    initializedRef.current = true
+    advanceToStory(1)
+    // advanceToStory is stable (useCallback with stable deps); omitting from
+    // deps array intentionally to run this exactly once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── Actions ──────────────────────────────────────────────────────────────
 
@@ -180,17 +187,29 @@ export function useGameSession(
   }, [activeQuestion, answeredIds, beginReading, currentStoryOrder])
 
   const advanceParagraph = useCallback(() => {
-    const timing = timer.endParagraph()
+    timer.endParagraph()
     const story = stories[currentStoryOrder - 1]
     if (!story) return
 
     const nextParagraphIndex = currentParagraphIndex + 1
+    const isEndOfStory = nextParagraphIndex >= story.paragraphs.length
 
-    // Check for a scheduled question at the NEXT paragraph break
-    const scheduledQ = getNext(currentStoryOrder, nextParagraphIndex, answeredIds)
+    // Check for a question AFTER the paragraph the user just finished reading.
+    // This ensures the user has seen the source material before being asked about it.
+    const scheduledQ = getNext(currentStoryOrder, currentParagraphIndex, answeredIds)
 
-    if (nextParagraphIndex >= story.paragraphs.length) {
-      // End of story — save story data and advance
+    if (scheduledQ) {
+      // Show the question overlay. Remember where to go once feedback is dismissed.
+      // null  → question was at the last paragraph; advance story after feedback.
+      // number → the next paragraph index to resume reading.
+      setPendingParagraphIndex(isEndOfStory ? null : nextParagraphIndex)
+      setActiveQuestion(scheduledQ)
+      setPhase('question')
+      return
+    }
+
+    if (isEndOfStory) {
+      // No question here — save story and move on immediately.
       const storyData: SessionStory = {
         storyId: story.id,
         storyOrder: currentStoryOrder,
@@ -206,15 +225,10 @@ export function useGameSession(
       return
     }
 
+    // Normal advance — next paragraph, no question.
     setCurrentParagraphIndex(nextParagraphIndex)
-
-    if (scheduledQ) {
-      setActiveQuestion(scheduledQ)
-      setPhase('question')
-    } else {
-      timer.startParagraph(nextParagraphIndex)
-      setPhase('reading')
-    }
+    timer.startParagraph(nextParagraphIndex)
+    setPhase('reading')
   }, [
     timer,
     stories,
@@ -264,10 +278,33 @@ export function useGameSession(
   const dismissFeedback = useCallback(() => {
     setActiveQuestion(null)
     setLastResponse(null)
-    // Resume reading at the current paragraph
-    timer.startParagraph(currentParagraphIndex)
-    setPhase('reading')
-  }, [timer, currentParagraphIndex])
+
+    if (pendingParagraphIndex === null) {
+      // Question was at the end of the story — save story data and advance.
+      const story = stories[currentStoryOrder - 1]
+      if (story) {
+        const storyData: SessionStory = {
+          storyId: story.id,
+          storyOrder: currentStoryOrder,
+          startedAt: new Date().toISOString(),
+          completedAt: new Date().toISOString(),
+          readingTimeMs: timer.timings.reduce((s, t) => s + t.timeSpentMs, 0),
+          paragraphTimings: timer.timings,
+          questionsAnswered: [],
+        }
+        sessionStoriesRef.current.push(storyData)
+        console.log('TODO save to db:', { type: 'story_complete', storyData })
+      }
+      advanceToStory(currentStoryOrder + 1)
+    } else {
+      // Resume reading at the paragraph the user hasn't seen yet.
+      setCurrentParagraphIndex(pendingParagraphIndex)
+      timer.startParagraph(pendingParagraphIndex)
+      setPhase('reading')
+    }
+
+    setPendingParagraphIndex(null)
+  }, [pendingParagraphIndex, timer, stories, currentStoryOrder, advanceToStory])
 
   return {
     phase,
