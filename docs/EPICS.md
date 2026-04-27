@@ -62,17 +62,17 @@ Status: [ ] Not started | [~] In progress | [x] Complete
 ## Epic 4 — Game Setup Flow
 **Goal:** User can go from Dashboard → pick a category → pick story count → click Start → land on /game/play with session params in the URL.
 
-- [ ] 4.1 — Build `CategoryCard` component (icon, name, tagline, onClick prop. No routing inside it.)
+- [x] 4.1 — Build `CategoryCard` component (icon, name, tagline, onClick prop. No routing inside it.)
   - **Test:** Render one card on Dashboard temporarily. Navigate to `/` — icon, name, tagline visible. Click it — console.log fires.
-- [ ] 4.2 — Build `StoryCountPicker` component (shadcn Slider, 3–15, live count label)
+- [x] 4.2 — Build `StoryCountPicker` component (shadcn Slider, 3–15, live count label)
   - **Test:** Render on Dashboard temporarily. Drag slider — label updates. `npm run build` passes.
-- [ ] 4.3 — Build `/game/setup` page with 8 CategoryCard grid (no picker yet)
+- [x] 4.3 — Build `/game/setup` page with 8 CategoryCard grid (no picker yet)
   - **Test:** Navigate to `/game/setup` — 8 cards visible, correct icon/name from registry. No console errors.
-- [ ] 4.4 — Wire `StoryCountPicker` into setup page. Selected category highlights. Start disabled until category picked.
+- [x] 4.4 — Wire `StoryCountPicker` into setup page. Selected category highlights. Start disabled until category picked.
   - **Test:** Click a category — highlights. Picker appears. Move slider. Start button activates.
-- [ ] 4.5 — "Start" button navigates to `/game/play?category=<slug>&count=<n>`
+- [x] 4.5 — "Start" button navigates to `/game/play?category=<slug>&count=<n>`
   - **Test:** Pick "Sci-Fi", set count to 7, click Start. URL becomes `/game/play?category=sci-fi&count=7`.
-- [ ] 4.6 — Update Dashboard: replace placeholder cards with real CategoryCard grid. Each links to setup with pre-selected category.
+- [x] 4.6 — Update Dashboard: replace placeholder cards with real CategoryCard grid. Each links to setup with pre-selected category.
   - **Test:** Navigate to `/`. 8 real cards with icons. Click one → lands on `/game/setup` with that category highlighted.
 
 ---
